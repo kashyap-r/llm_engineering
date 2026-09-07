@@ -13,8 +13,8 @@ load_dotenv(override=True)
 MODEL = "gpt-4.1-nano"
 DB_NAME = str(Path(__file__).parent.parent / "vector_db")
 
-# embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+# embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 RETRIEVAL_K = 10
 
 SYSTEM_PROMPT = """
@@ -41,6 +41,7 @@ def fetch_context(question: str) -> list[Document]:
 def combined_question(question: str, history: list[dict] = []) -> str:
     """
     Combine all the user's messages into a single string.
+    In real world 
     """
     prior = "\n".join(m["content"] for m in history if m["role"] == "user")
     return prior + "\n" + question
@@ -49,6 +50,7 @@ def combined_question(question: str, history: list[dict] = []) -> str:
 def answer_question(question: str, history: list[dict] = []) -> tuple[str, list[Document]]:
     """
     Answer the given question with RAG; return the answer and the context documents.
+    Here, we're using the history, convert them into messages and feeding back into the LLM
     """
     combined = combined_question(question, history)
     docs = fetch_context(combined)
